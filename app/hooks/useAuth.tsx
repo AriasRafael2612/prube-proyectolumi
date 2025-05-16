@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AuthService } from '../auth/auth.service';
 import { User } from '../../interfaces/types';
 
@@ -6,23 +6,29 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const fullProfile = await AuthService.getUserProfile();
-        console.log('Perfil completo cargado:', fullProfile);
-        setUser(fullProfile);
-      } catch (error) {
-        console.error('Error al cargar perfil:', error);
-        const fallbackUser = await AuthService.getCurrentUser();
-        setUser(fallbackUser);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadUser();
+  const loadUser = useCallback(async () => {
+    try {
+      const fullProfile = await AuthService.getUserProfile();
+      console.log('Perfil completo cargado:', fullProfile);
+      setUser(fullProfile);
+    } catch (error) {
+      console.error('Error al cargar perfil:', error);
+      const fallbackUser = await AuthService.getCurrentUser();
+      setUser(fallbackUser);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
+
+  // Función para refrescar el usuario bajo demanda
+  const refreshUser = async () => {
+    setIsLoading(true);
+    await loadUser();
+  };
 
   return {
     user,
@@ -30,5 +36,6 @@ export function useAuth() {
     isAuthenticated: !!user,
     login: AuthService.login,
     logout: AuthService.logout,
+    refreshUser,  // <-- exporta esta función para que la uses en ProfileScreen
   };
 }
