@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
+import Constants from 'expo-constants';
 
-const API_URL = 'http://192.168.0.10:3000/user';
+const BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
+const API_URL = `${BASE_URL}/user`;
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
@@ -32,17 +34,16 @@ export default function ResetPasswordScreen() {
         token,
         userNewPassword: newPassword
       });
-      
+
       Alert.alert(
-        'Éxito', 
+        'Éxito',
         'Contraseña actualizada correctamente',
         [{ text: 'OK', onPress: () => router.replace('/auth/login_screen') }]
       );
-      
     } catch (error) {
       console.error('Error:', error);
       Alert.alert(
-        'Error', 
+        'Error',
         'Código inválido o expirado. Por favor solicita uno nuevo.'
       );
     } finally {
@@ -53,7 +54,7 @@ export default function ResetPasswordScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Restablecer Contraseña</Text>
-      
+
       <Text style={styles.emailText}>Código enviado a: {userEmail}</Text>
 
       <TextInput
@@ -120,3 +121,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+
+
+
+
+
+
+

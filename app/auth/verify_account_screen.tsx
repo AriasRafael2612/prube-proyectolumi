@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator, Modal, Pressable } from 'react-native';
 import axios from 'axios';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 
-const API_URL = 'http://192.168.0.10:3000/user'; 
+const BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
+const API_URL = `${BASE_URL}/user`;
 
 export default function VerifyAccountScreen() {
   const router = useRouter();
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Modal para reenviar token
   const [modalVisible, setModalVisible] = useState(false);
   const [resendEmail, setResendEmail] = useState('');
+
+  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
 
   const handleVerify = async () => {
     if (!token) {
@@ -36,7 +39,6 @@ export default function VerifyAccountScreen() {
           errorMessage = 'Usuario no encontrado';
         }
       }
-      
       Alert.alert('Error', errorMessage);
     } finally {
       setLoading(false);
@@ -44,7 +46,15 @@ export default function VerifyAccountScreen() {
   };
 
   const handleResendToken = async () => {
-    if (!resendEmail) return;
+    if (!resendEmail) {
+      Alert.alert('Error', 'Por favor ingresa tu email');
+      return;
+    }
+
+    if (!isValidEmail(resendEmail)) {
+      Alert.alert('Error', 'Correo inválido');
+      return;
+    }
 
     try {
       setLoading(true);
@@ -94,7 +104,7 @@ export default function VerifyAccountScreen() {
         </>
       )}
 
-      {/* Modal para ingresar el email */}
+      {/* Modal para reenviar token */}
       <Modal
         visible={modalVisible}
         transparent
@@ -126,6 +136,7 @@ export default function VerifyAccountScreen() {
     </View>
   );
 }
+
 
 
 const styles = StyleSheet.create({

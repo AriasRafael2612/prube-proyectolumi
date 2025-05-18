@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import axios from 'axios';
+import Constants from 'expo-constants';
 
-const API_URL = 'http://192.168.0.10:3000/user';
+const BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
+const API_URL = `${BASE_URL}/user`;
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -19,16 +21,16 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await axios.post(`${API_URL}/forget-password`, { email });
-      
+
       router.push({
         pathname: '/auth/reset_password_screen',
         params: { userEmail: email }
       });
-      
+
     } catch (error) {
       console.error('Error:', error);
       Alert.alert(
-        'Información', 
+        'Información',
         'Si el email está registrado, recibirás un código para restablecer tu contraseña'
       );
     } finally {
@@ -93,9 +95,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-
-
 
 
 

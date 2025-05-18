@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Button, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
 type EditField = 'name' | 'lastname' | 'nickname';
 
@@ -24,6 +25,8 @@ const endpointMap: Record<EditField, string> = {
   nickname: 'change-nickname',
 };
 
+const BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
+
 const EditProfileScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<RouteParams, 'EditProfile'>>();
@@ -38,13 +41,13 @@ const EditProfileScreen = () => {
     }
 
     try {
-        const token = await AsyncStorage.getItem('userToken');
+      const token = await AsyncStorage.getItem('userToken');
 
       if (!token) {
         throw new Error('No se encontró el token');
       }
 
-      const response = await fetch(`http://192.168.0.10:3000/user/${endpointMap[field]}`, {
+      const response = await fetch(`${BASE_URL}/user/${endpointMap[field]}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

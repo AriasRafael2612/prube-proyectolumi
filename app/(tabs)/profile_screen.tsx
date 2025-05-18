@@ -2,13 +2,12 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useAuth } from '../hooks/useAuth';
-import { useRouter, useFocusEffect } from 'expo-router'; // si no tienes useFocusEffect, puedes usar otro método
+import { useRouter, useFocusEffect } from 'expo-router';
 
 const ProfileScreen = () => {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
 
-  // Recarga el usuario cada vez que la pantalla gana foco
   useFocusEffect(
     React.useCallback(() => {
       refreshUser();

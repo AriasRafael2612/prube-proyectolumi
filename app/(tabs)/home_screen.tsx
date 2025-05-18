@@ -11,7 +11,6 @@ const HomeScreen = () => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [logoutDialogVisible, setLogoutDialogVisible] = useState(false);
 
-  // Refrescar usuario cada vez que la pantalla gana foco
   useFocusEffect(
     React.useCallback(() => {
       refreshUser();

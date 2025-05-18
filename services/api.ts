@@ -1,6 +1,7 @@
 import axios from 'axios';
+import Constants from 'expo-constants';
 
-const API_URL = 'http://192.168.0.10:3000';  
+const BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
 
 export const registerUser = (data: {
   userName: string;
@@ -9,5 +10,5 @@ export const registerUser = (data: {
   userEmail: string;
   userPassword: string;
 }) => {
-  return axios.post(`${API_URL}/user/register`, data);
+  return axios.post(`${BASE_URL}/user/register`, data);
 };

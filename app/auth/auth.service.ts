@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { StorageService } from '../../services/storage.service';
+import Constants from 'expo-constants';
 
-const API_URL = 'http://192.168.0.10:3000/user';
+const BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
+const API_URL = `${BASE_URL}/user`;
 
 export const AuthService = {
   async login(identifier: string, password: string, isEmail: boolean) {
@@ -43,12 +45,12 @@ export const AuthService = {
     if (!token) {
       throw new Error('No token found');
     }
-  
+
     const response = await axios.patch(
       `${API_URL}/change-password`,
       {
         currentPassword,
-        userNewPassword: newPassword, 
+        userNewPassword: newPassword,
       },
       {
         headers: {
@@ -56,25 +58,14 @@ export const AuthService = {
         },
       }
     );
-  
+
     return response.data;
   },
-  
 
   async logout() {
     await StorageService.clearAuthData();
   },
 };
-
-
-
-
-
-
-
-
-
-
 
 
 

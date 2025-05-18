@@ -1,10 +1,11 @@
-// app/auth/verify_email.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import axios, { AxiosError } from 'axios';
 import { useRouter } from 'expo-router';
+import Constants from 'expo-constants';
 
-const API_URL = 'http://192.168.0.10:3000/user';
+const BASE_URL = Constants.expoConfig?.extra?.API_BASE_URL;
+const API_URL = `${BASE_URL}/user`;
 
 export default function VerifyEmail() {
   const [email, setEmail] = useState('');
