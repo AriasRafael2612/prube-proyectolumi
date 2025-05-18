@@ -35,7 +35,7 @@ const HomeScreen = () => {
 
   const handleLogout = () => {
     setLogoutDialogVisible(false);
-    // Aquí va tu lógica para cerrar sesión (ej. limpiar token, etc.)
+
     router.replace('/auth/login_screen');
   };
 
@@ -117,3 +117,15 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
+
+
+
+
+
+
+
+
+
+
+
+
