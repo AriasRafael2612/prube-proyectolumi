@@ -24,11 +24,16 @@ const ProfileScreen = () => {
   }
 
   const handleEdit = (field: 'name' | 'lastname' | 'nickname' | 'password', currentValue: string) => {
-    router.push({
-      pathname: '/(tabs)/edit_profile_screen',
-      params: { field, currentValue }
-    });
+    if (field === 'password') {
+      router.push('/(tabs)/change_password'); // Asegúrate de que esta ruta exista
+    } else {
+      router.push({
+        pathname: '/(tabs)/edit_profile_screen',
+        params: { field, currentValue },
+      });
+    }
   };
+  
 
   return (
     <View style={styles.container}>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AuthService } from '../auth/auth.service';
 import { User } from '../../interfaces/types';
+import { StorageService } from '../../services/storage.service';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -8,11 +9,20 @@ export function useAuth() {
 
   const loadUser = useCallback(async () => {
     try {
+      const token = await StorageService.getItem('userToken');
+
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
       const fullProfile = await AuthService.getUserProfile();
       console.log('Perfil completo cargado:', fullProfile);
       setUser(fullProfile);
     } catch (error) {
       console.error('Error al cargar perfil:', error);
+
+      // Intentamos usar un perfil local mínimo como respaldo
       const fallbackUser = await AuthService.getCurrentUser();
       setUser(fallbackUser);
     } finally {
@@ -24,7 +34,6 @@ export function useAuth() {
     loadUser();
   }, [loadUser]);
 
-  // Función para refrescar el usuario bajo demanda
   const refreshUser = async () => {
     setIsLoading(true);
     await loadUser();
@@ -36,6 +45,7 @@ export function useAuth() {
     isAuthenticated: !!user,
     login: AuthService.login,
     logout: AuthService.logout,
-    refreshUser,  // <-- exporta esta función para que la uses en ProfileScreen
+    refreshUser,
   };
 }
+

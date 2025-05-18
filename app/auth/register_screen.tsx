@@ -1,11 +1,20 @@
-// app/auth/register_screen.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  Button, 
+  StyleSheet, 
+  Alert,
+  TouchableOpacity
+} from 'react-native';
 import { registerUser } from '../../services/api';
 import { useRouter } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     userName: '',
@@ -39,17 +48,36 @@ export default function RegisterScreen() {
         { name: 'userLastName', placeholder: 'Apellido' },
         { name: 'userNickName', placeholder: 'Nombre de Usuario' },
         { name: 'userEmail', placeholder: 'Correo Electrónico' },
-        { name: 'userPassword', placeholder: 'Contraseña', secure: true },
-      ].map(({ name, placeholder, secure }) => (
+      ].map(({ name, placeholder }) => (
         <TextInput
           key={name}
           style={styles.input}
           placeholder={placeholder}
-          secureTextEntry={secure}
           value={(formData as any)[name]}
           onChangeText={text => handleChange(name, text)}
         />
       ))}
+
+      {/* Campo de contraseña con toggle de visibilidad */}
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Contraseña"
+          secureTextEntry={!showPassword}
+          value={formData.userPassword}
+          onChangeText={text => handleChange('userPassword', text)}
+        />
+        <TouchableOpacity 
+          style={styles.iconButton}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <MaterialIcons 
+            name={showPassword ? 'visibility-off' : 'visibility'} 
+            size={24} 
+            color="#666" 
+          />
+        </TouchableOpacity>
+      </View>
 
       <Button title="Registrarse" onPress={handleRegister} />
     </View>
@@ -74,7 +102,32 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 15,
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 12,
+  },
+  iconButton: {
+    padding: 10,
+  },
 });
+
+
+
+
+
+
+
+
+
+
 
 
 

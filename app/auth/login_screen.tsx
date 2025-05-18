@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../hooks/useAuth';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [isEmail, setIsEmail] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!identifier || !password) {
@@ -95,16 +97,27 @@ export default function LoginScreen() {
         autoCorrect={false}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        autoComplete="password"
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Contraseña"
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={setPassword}
+          autoComplete="password"
+        />
+        <TouchableOpacity 
+          style={styles.iconButton}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <MaterialIcons 
+            name={showPassword ? 'visibility-off' : 'visibility'} 
+            size={24} 
+            color="#666" 
+          />
+        </TouchableOpacity>
+      </View>
 
-      {/* Nuevo: Enlace para recuperar contraseña */}
       <TouchableOpacity 
         style={styles.forgotPasswordLink}
         onPress={() => router.push('/auth/forgot_password_screen')}
@@ -132,6 +145,14 @@ export default function LoginScreen() {
               color="#666"
             />
           </View>
+
+          <TouchableOpacity 
+            style={styles.verifyEmailLink}
+            onPress={() => router.push('/auth/verify_email')}
+          >
+            <Text style={styles.verifyEmailText}>¿No has verificado tu correo? Verificar ahora</Text>
+          </TouchableOpacity>
+
         </>
       )}
     </View>
@@ -187,6 +208,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 8,
+    backgroundColor: '#fff',
+  },
+  passwordInput: {
+    flex: 1,
+    padding: 12,
+    fontSize: 16,
+  },
+  iconButton: {
+    padding: 10,
+  },
   forgotPasswordLink: {
     alignSelf: 'flex-end',
     marginBottom: 15,
@@ -210,4 +248,28 @@ const styles = StyleSheet.create({
   loader: {
     marginVertical: 20,
   },
+  verifyEmailLink: {
+    marginVertical: 10,
+    alignSelf: 'center',
+  },
+  verifyEmailText: {
+    color: '#007AFF',
+    fontSize: 14,
+    textDecorationLine: 'underline',
+  },
+  
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+

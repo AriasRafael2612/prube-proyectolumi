@@ -1,6 +1,5 @@
-// app/auth/verify_account_screen.tsx
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator, Modal, Pressable } from 'react-native';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
 
@@ -10,6 +9,10 @@ export default function VerifyAccountScreen() {
   const router = useRouter();
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Modal para reenviar token
+  const [modalVisible, setModalVisible] = useState(false);
+  const [resendEmail, setResendEmail] = useState('');
 
   const handleVerify = async () => {
     if (!token) {
@@ -41,32 +44,19 @@ export default function VerifyAccountScreen() {
   };
 
   const handleResendToken = async () => {
-    Alert.prompt(
-      'Reenviar token',
-      'Ingresa tu email para reenviar el token de verificación',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Enviar',
-          onPress: async (email) => {
-            if (!email) return;
-            
-            try {
-              setLoading(true);
-              await axios.post(`${API_URL}/resend-verification`, { email });
-              Alert.alert('Éxito', 'Token reenviado, revisa tu email');
-            } catch (error) {
-              Alert.alert('Error', 'No se pudo reenviar el token');
-            } finally {
-              setLoading(false);
-            }
-          }
-        }
-      ],
-      'plain-text',
-      '',
-      'email-address'
-    );
+    if (!resendEmail) return;
+
+    try {
+      setLoading(true);
+      await axios.post(`${API_URL}/resend-verification`, { email: resendEmail });
+      Alert.alert('Éxito', 'Token reenviado, revisa tu email');
+      setModalVisible(false);
+      setResendEmail('');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo reenviar el token');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -91,21 +81,52 @@ export default function VerifyAccountScreen() {
           <Button
             title="Verificar cuenta"
             onPress={handleVerify}
-            disabled={loading}
+            disabled={loading || !token}
           />
           <View style={styles.resendContainer}>
             <Text style={styles.resendText}>¿No recibiste el token?</Text>
             <Button
               title="Reenviar token"
-              onPress={handleResendToken}
+              onPress={() => setModalVisible(true)}
               color="#666"
             />
           </View>
         </>
       )}
+
+      {/* Modal para ingresar el email */}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Reenviar token</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={resendEmail}
+              onChangeText={setResendEmail}
+            />
+            <View style={styles.modalButtons}>
+              <Pressable style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                <Text style={styles.cancelText}>Cancelar</Text>
+              </Pressable>
+              <Pressable style={styles.sendButton} onPress={handleResendToken}>
+                <Text style={styles.sendText}>Enviar</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -141,4 +162,62 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#666',
   },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 10,
+  },
+  cancelButton: {
+    marginRight: 10,
+  },
+  cancelText: {
+    color: '#666',
+    fontSize: 16,
+  },
+  sendButton: {
+    backgroundColor: '#007BFF',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  sendText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
